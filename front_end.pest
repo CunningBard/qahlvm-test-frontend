@@ -1,0 +1,62 @@
+
+natural_newline = _{"␍␊" | "\r\n" | "\n"}
+explicit_newline = _{";"}
+new_line = _{natural_newline | explicit_newline}
+line_terminator = _{new_line | EOI}
+
+
+identifier = @{ "_"* ~ ASCII_ALPHANUMERIC ~ (ASCII_ALPHANUMERIC | "_" )* }
+string = @{ "\"" ~ (("\\\"" | !"\"")  ~ ANY)* ~ "\"" }
+float = @{ ("-")? ~ ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT+ }
+integer = @{ ("-")? ~ ASCII_DIGIT+ }
+boolean = @{ "true" | "false" }
+
+eq_ops = { "==" | "!="  | ">=" | "<=" | ">" | "<"}
+sum_ops = { "+" | "-" }
+prod_ops = { "*" | "/" }
+
+list = { "[" ~ expr* ~ ("," ~ expr)* ~ ","? ~ "]" }
+expr = { bare_expr }
+function_call = { identifier ~ "(" ~ expr* ~ ("," ~ expr)* ~ ")" }
+bare_expr = { sum ~ ((eq_ops) ~ sum)* }
+sum = { product ~ ((sum_ops) ~ product)* }
+product = { term ~ ((prod_ops) ~ term)* }
+term = {
+    (string |
+    float |
+    integer |
+    boolean |
+    list |
+    function_call |
+    identifier |
+    "(" ~ expr ~ ")" )
+}
+
+
+variable_assignment = {"assign" ~ identifier ~ "=" ~ expr}
+while_loop = { "while" ~ expr ~ block }
+
+
+block = { "{" ~ inner_statements ~ "}"}
+
+inner_statement = _{
+    (
+        variable_assignment
+        | function_call
+        | while_loop
+    )
+    ~ new_line*
+}
+
+inner_statements = _{ new_line* ~ inner_statement* ~ new_line*}
+
+outer_statement = _{
+    (new_line* ~ (
+        inner_statement
+    ) ~ new_line*)
+}
+
+
+program = _{ SOI ~ outer_statement* ~ EOI}
+
+WHITESPACE = _{ " " | "\t" }

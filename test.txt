@@ -1,0 +1,5 @@
+assign i = 0;
+while i < 10000 {
+    assign i = i + 1;
+    println("Hello World!");
+}
