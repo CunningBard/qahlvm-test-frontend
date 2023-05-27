@@ -6,6 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-qahlvm = { path = "../../../VirtualMachines/1/qahlvm" }
+qahlvm = { path = "../qahlvm" }
 pest = "2.6.0"
 pest_derive = "2.6.0"
